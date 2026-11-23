@@ -1,0 +1,212 @@
+---
+name: Garad Universe
+colors:
+  surface: '#fff8f4'
+  surface-dim: '#e2d8d0'
+  surface-bright: '#fff8f4'
+  surface-container-lowest: '#ffffff'
+  surface-container-low: '#fcf2ea'
+  surface-container: '#f7ece4'
+  surface-container-high: '#f1e6de'
+  surface-container-highest: '#ebe1d9'
+  on-surface: '#1f1b16'
+  on-surface-variant: '#58423a'
+  inverse-surface: '#352f2a'
+  inverse-on-surface: '#f9efe7'
+  outline: '#8c7169'
+  outline-variant: '#e0c0b6'
+  surface-tint: '#a93806'
+  primary: '#a53604'
+  on-primary: '#ffffff'
+  primary-container: '#c74e1e'
+  on-primary-container: '#fffbff'
+  inverse-primary: '#ffb59c'
+  secondary: '#006783'
+  on-secondary: '#ffffff'
+  secondary-container: '#89d9fd'
+  on-secondary-container: '#00607b'
+  tertiary: '#356649'
+  on-tertiary: '#ffffff'
+  tertiary-container: '#4e7f60'
+  on-tertiary-container: '#f6fff5'
+  error: '#ba1a1a'
+  on-error: '#ffffff'
+  error-container: '#ffdad6'
+  on-error-container: '#93000a'
+  primary-fixed: '#ffdbcf'
+  primary-fixed-dim: '#ffb59c'
+  on-primary-fixed: '#390c00'
+  on-primary-fixed-variant: '#822700'
+  secondary-fixed: '#bde9ff'
+  secondary-fixed-dim: '#80d1f4'
+  on-secondary-fixed: '#001f2a'
+  on-secondary-fixed-variant: '#004d64'
+  tertiary-fixed: '#b9efca'
+  tertiary-fixed-dim: '#9ed2af'
+  on-tertiary-fixed: '#002110'
+  on-tertiary-fixed-variant: '#1e5035'
+  background: '#fff8f4'
+  on-background: '#1f1b16'
+  surface-variant: '#ebe1d9'
+typography:
+  display-hero:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 56px
+    fontWeight: '800'
+    lineHeight: 64px
+    letterSpacing: -0.03em
+  display-hero-mobile:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 36px
+    fontWeight: '800'
+    lineHeight: 44px
+    letterSpacing: -0.02em
+  headline-lg:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 38px
+    fontWeight: '700'
+    lineHeight: 46px
+    letterSpacing: -0.02em
+  headline-lg-mobile:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 28px
+    fontWeight: '700'
+    lineHeight: 34px
+    letterSpacing: -0.01em
+  headline-md:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 26px
+    fontWeight: '600'
+    lineHeight: 34px
+    letterSpacing: -0.01em
+  headline-sm:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 20px
+    fontWeight: '600'
+    lineHeight: 28px
+    letterSpacing: 0em
+  body-lg:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 18px
+    fontWeight: '400'
+    lineHeight: 28px
+    letterSpacing: -0.005em
+  body-md:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 15px
+    fontWeight: '400'
+    lineHeight: 24px
+    letterSpacing: 0em
+  body-sm:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 13px
+    fontWeight: '400'
+    lineHeight: 20px
+    letterSpacing: 0.01em
+  label-lg:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 14px
+    fontWeight: '600'
+    lineHeight: 20px
+    letterSpacing: 0.02em
+  label-md:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 12px
+    fontWeight: '600'
+    lineHeight: 16px
+    letterSpacing: 0.03em
+  label-sm:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 11px
+    fontWeight: '700'
+    lineHeight: 14px
+    letterSpacing: 0.06em
+rounded:
+  sm: 0.5rem
+  DEFAULT: 1rem
+  md: 1.5rem
+  lg: 2rem
+  xl: 3rem
+  full: 9999px
+spacing:
+  gutter: 1.5rem
+  gutter-mobile: 1rem
+  margin: 3rem
+  margin-mobile: 1.25rem
+  space-xs: 0.25rem
+  space-sm: 0.5rem
+  space-md: 1rem
+  space-lg: 1.5rem
+  space-xl: 2.5rem
+---
+
+## Brand & Style
+The design system powers an interactive, cinematic 3D animated web experience celebrating grassroots educational empowerment through the journey of Bharari—a vibrant blue-and-orange bird carrying a miniature leather schoolbag across rural Maharashtra. 
+
+The aesthetic translates the wonder of prestige feature-length animation into an interactive canvas. It fuses organic nature-infused warmth with refined, cutting-edge digital craftsmanship. The design blends:
+- **Atmospheric Storybook Realism:** Sun-drenched horizons, terracotta rooftops, whispering sugarcane foliage, and sweeping cinematic camera vistas.
+- **Luminous Glassmorphism:** Translucent dialogue overlays, floating HUD progress markers, and misted ambient controls that feel suspended in dewy morning air.
+- **Tactile Warmth:** Polished pill surfaces with subtle inner specular glows evoking morning light catching polished resin or wet river stone.
+
+The emotional tone is deeply uplifting, reverent, adventurous, and prestige-grade. It invites children, educators, and global patrons alike to engage with educational transformation not as a clinical metric, but as an enchanting living narrative.
+
+## Colors
+The color palette draws directly from the biosphere and architectural soul of rural Maharashtra during golden hour:
+- **Primary (`#D85A2A` - Sahyadri Saffron Terracotta):** Represents the morning sun breaking over red earth, Bharari's radiant plumage, and fiery optimism. Used for focal call-to-actions, vital narrative triggers, and active states.
+- **Secondary (`#1A7B9B` - Monsoon Sky Teal):** Evokes crisp Deccan morning skies, Bharari's flight feathers, and clear water reserves. Used for narrative transitions, secondary interactive triggers, and key informational badges.
+- **Tertiary (`#295A3E` - Deep Sugarcane Green):** Grounding vegetative shade, symbolizing growth, sustenance, and regional geography. Used for deep environmental frames, chapter markers, and subtle grounding accents.
+- **Neutral (`#2B2621` - Roasted Earth Charcoal):** A rich, organic near-black imbued with warm umber undertones, ensuring high legibility without the sterile chill of pure carbon black.
+
+### Supporting Background & Luminous Accents
+- **Canvas Base:** Soft warm milk and morning dew (`#FBF8F2` to `#F3EFE6`).
+- **Solar Highlighting:** Golden nectar (`#F5B738`) used strictly for dynamic ambient light bleeding, focus rings, and hover glows.
+- **Surface Translucency:** Frosted glass white (`rgba(255, 255, 255, 0.72)`) balanced with soft warm tinting for dialogue balloons and floating interface panels.
+
+## Typography
+`Plus Jakarta Sans` governs the entire typographic hierarchy. Its humanist curves, open counters, and refined geometric underpinnings allow it to act simultaneously as a storybook display typeface and a crisp UI font. 
+
+- Large titles leverage tighter negative tracking and bold weights to evoke modern animated title cards.
+- Narrative prose maintains generous line heights for frictionless reading against dynamic 3D backdrops.
+- Interactive controls and labels adopt higher tracking (`0.02em` to `0.06em`) and medium-to-bold weights to guarantee legibility across fluctuating cinematic lighting and translucent glass backplates.
+
+## Layout & Spacing
+The layout follows a fluid-hybrid stage model designed to frame the WebGL canvas without cluttering the interactive viewport:
+- **Cinematic Stage Layer:** The full-viewport canvas (`100vw`, `100vh`) anchors the 3D world.
+- **HUD Frame:** Persistent controls (sound toggle, perspective switcher, chapter timeline) anchor to the outer margin safe zones: `3rem` on desktop, reducing to `1.25rem` on mobile.
+- **12-Column Responsive Grid:** When structured story sheets or donor impact modules unfold over the scene, content conforms to a centered 12-column grid (maximum container width: `1280px`) with `1.5rem` gutters.
+- **Spatial Densities:** Vertical spacing prioritizes breathing room, allowing character animations to occupy the upper or lateral thirds of the camera frustum without UI collision.
+
+## Elevation & Depth
+Depth mimics optical physical light rather than artificial drop shadows:
+- **Atmospheric Glassmorphism (Level 1 - Floating HUD & Bubbles):** `backdrop-filter: blur(16px) saturate(180%)`, surface fill `rgba(255, 255, 255, 0.76)`, bordered by a razor-thin top-lit highlight (`1px solid rgba(255, 255, 255, 0.9)`) and an ambient tinted drop shadow: `0 8px 32px -4px rgba(43, 38, 33, 0.08), 0 2px 6px -1px rgba(216, 90, 42, 0.04)`.
+- **Raised Interactive Elements (Level 2 - Primary Actions):** Opaque warm saffron and teal pill elements with an internal ambient rim: `inset 0 1px 1px 0 rgba(255, 255, 255, 0.45)`.
+- **Golden Solar Halo (Interactive State):** Focused and hovered interactive components emit a sun-drenched aura: `box-shadow: 0 0 0 3px rgba(245, 183, 56, 0.35), 0 12px 24px -6px rgba(216, 90, 42, 0.35)`.
+- **Cinematic Vignette:** A permanent low-opacity radial gradient around the viewport corners (`rgba(43, 38, 33, 0.12)`) guides visual attention toward the central third where Bharari navigates.
+
+## Shapes
+A roundedness level of `3` (Pill-shaped) defines the visual vocabulary. 
+- Interactive elements (buttons, sound controls, search pills, timeline scrubbing nodules) utilize pure organic capsules (`rounded-full` / `9999px`).
+- Narrative dialogue balloons use generous curvilinear hulls (`2rem` / `32px` corner radiuses) accented by a directional organic teardrop tail pointing toward Bharari's beak.
+- Cards, modal viewports, and chapter plates embrace `rounded-xl` (`3rem` / `48px` on desktop, `1.5rem` / `24px` on mobile), reinforcing the non-threatening, child-friendly, animated storybook physical quality.
+
+## Components
+
+### Buttons & Interactive Triggers
+- **Primary Pill:** Background filled with `#D85A2A`, text color `#FFFFFF`. Features an inner top highlight border (`rgba(255, 255, 255, 0.35)`), pill radius, and smooth kinetic hover state that elevates the button 2px while casting a warm golden solar bloom (`#F5B738`).
+- **Secondary Glass Pill:** Translucent white backplate (`rgba(255, 255, 255, 0.65)`), text `#1A7B9B`, with a crisp translucent sky-teal border (`rgba(26, 123, 155, 0.25)`).
+- **Icon Controls (Sound Toggle / Camera Reset):** 44x44px circular glass disks with dynamic waveform micro-animations indicating soundscapes (ambient village birds, wind chimes, flute score).
+
+### Speech Bubbles (Story Dialogue)
+- **Construct:** Floating speech bubbles placed in 3D projection coordinates near Bharari. Backplate composed of frosted milk glass (`rgba(255, 255, 255, 0.88)` with `backdrop-filter: blur(20px)`), with gentle terracotta-tinted text (`#2B2621`) and saffron-highlighted keywords.
+- **Tail:** Rounded organic SVG pointer oriented dynamically toward the character’s current screen position.
+
+### Story Progress & Chapter Indicators
+- **Scrubber Bar:** A slender 4px translucent trough positioned along the bottom margin. The active progress track gleams with a saffron-to-gold gradient (`#D85A2A` to `#F5B738`).
+- **Chapter Waypoints:** Small circular pearl nodes along the timeline that expand into pill-shaped chapter titles on hover or when triggered by 3D camera milestones.
+
+### Cards & Story Panels
+- Overlaid informational sheets feature deep `rounded-xl` corners, subtle cream-to-white vertical gradient fills, warm terracotta headings, and crisp imagery with soft inner borders simulating physical storybook pages.
+
+### Checkboxes, Radios, & Inputs
+- **Inputs:** Floating pill forms with soft cream fills (`rgba(243, 239, 230, 0.7)`), inset shadow for subtle depth, and golden glow rings on focus.
+- **Selection Controls:** Circular radio indicators and organic rounded checkboxes styled in deep monsoon teal (`#1A7B9B`) with crisp white iconography.

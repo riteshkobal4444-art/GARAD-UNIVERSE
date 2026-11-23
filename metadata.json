@@ -1,0 +1,6 @@
+{
+  "name": "Garad Universe",
+  "description": "A Little World. A Thousand Dreams. An interactive 3D animated village experience for Garad Foundation featuring Bharari.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
