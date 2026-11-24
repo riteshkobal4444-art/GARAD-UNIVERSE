@@ -170,6 +170,11 @@ export default function App() {
     setExplorerSettings((prev) => ({ ...prev, audio: ambientSoundscape.getSettings() }));
   }, []);
 
+  const handleChangeTimeOfDay = useCallback((mode: TimeOfDayMode) => {
+    ambientSoundscape.unlockFromUserGesture();
+    setTimeOfDay(mode);
+  }, []);
+
   const handleGoCentralHub = useCallback(() => {
     setIsProgrammePanelOpen(false);
     setSelectedDestination(null);
@@ -453,7 +458,7 @@ export default function App() {
           screen={screen}
           timeOfDay={timeOfDay}
           soundEnabled={soundEnabled}
-          onChangeTimeOfDay={setTimeOfDay}
+          onChangeTimeOfDay={handleChangeTimeOfDay}
           onToggleSound={handleToggleSound}
           onOpenSettings={() => setSettingsOpen(true)}
           onGoCentralHub={handleGoCentralHub}
@@ -522,6 +527,8 @@ export default function App() {
       {screen === 'school-adventure' && (
         <SchoolAdventureOverlay
           snapshot={schoolSnapshot}
+          timeOfDay={timeOfDay}
+          onChangeTimeOfDay={handleChangeTimeOfDay}
           soundMuted={explorerSettings.audio.muted}
           onToggleMute={handleToggleSound}
           onOpenSettings={() => setSettingsOpen(true)}
@@ -573,7 +580,7 @@ export default function App() {
         onClose={() => setSettingsOpen(false)}
         onUpdateSettings={handleUpdateSettings}
         onUpdateAudio={handleUpdateAudio}
-        onChangeTimeOfDay={setTimeOfDay}
+        onChangeTimeOfDay={handleChangeTimeOfDay}
         onNavigateScreen={handleNavigateDirectScreen}
         onReplayCloudArrival={handleReplayCloudArrival}
       />

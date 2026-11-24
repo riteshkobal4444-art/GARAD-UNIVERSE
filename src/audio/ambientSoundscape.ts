@@ -18,6 +18,9 @@ interface BusGains {
 
 interface EnvLayerGains {
   leaves: GainNode;
+  sunsetWind: GainNode;
+  nightBreeze: GainNode;
+  villageDayAir: GainNode;
   cloudWind: GainNode;
   birds: GainNode;
   classroom: GainNode;
@@ -188,6 +191,9 @@ class AmbientSoundscape {
 
       this.envLayers = {
         leaves: makeSub(this.buses.environment),
+        sunsetWind: makeSub(this.buses.environment),
+        nightBreeze: makeSub(this.buses.environment),
+        villageDayAir: makeSub(this.buses.environment),
         cloudWind: makeSub(this.buses.environment),
         birds: makeSub(this.buses.environment),
         classroom: makeSub(this.buses.environment),
@@ -225,6 +231,7 @@ class AmbientSoundscape {
     this.applyBusVolumes();
     this.applyLayerMix();
     this.scheduleBirdLoop();
+    this.scheduleNightInsectLoop();
     this.scheduleMusicalPhraseLoop();
     this.scheduleContextDetailsLoop();
   }
@@ -300,46 +307,97 @@ class AmbientSoundscape {
     const zone = isSchool ? this.currentSchoolZone : null;
     const indoors = zone === 'classroom' || zone === 'library';
 
-    const setMix = (gainNode: GainNode, target: number) => {
+    const setMix = (gainNode: GainNode, target: number, timeConstant = 0.68) => {
       gainNode.gain.cancelScheduledValues(now);
-      gainNode.gain.setTargetAtTime(Math.max(0.0001, target), now, 0.55);
+      gainNode.gain.setTargetAtTime(Math.max(0.0001, target), now, timeConstant);
     };
 
     const isVillageStreet = isSchool && zone === 'village-street';
 
-    // Environment beds (smooth crossfade per scene, peaceful rural village atmosphere)
-    setMix(this.envLayers.cloudWind, isCloud ? 0.92 : isHub ? 0.22 : isVillageStreet ? 0.12 : 0.0001);
+    // Environment beds (smooth crossfade between Day, Sunset, and Night presets)
+    setMix(this.envLayers.cloudWind, isCloud ? 0.92 : isHub ? 0.22 : isVillageStreet && isDay ? 0.08 : 0.0001);
+
+    // Day soft breeze through trees
     setMix(
       this.envLayers.leaves,
       isCloud
         ? 0.08
         : indoors
-          ? 0.14
-          : isNight
-            ? 0.34
-            : isVillageStreet
-              ? 0.76
+          ? 0.12
+          : isDay
+            ? isVillageStreet
+              ? 0.82
               : isHub || isSankalp
                 ? 0.72
-                : 0.58,
+                : 0.64
+            : isSunset
+              ? 0.26
+              : 0.0001,
     );
+
+    // Sunset gentle evening wind
+    setMix(
+      this.envLayers.sunsetWind,
+      isCloud
+        ? 0.0001
+        : indoors
+          ? isSunset
+            ? 0.14
+            : 0.0001
+          : isSunset
+            ? 0.78
+            : 0.0001,
+    );
+
+    // Night gentle nighttime breeze & quiet rural nocturnal air
+    setMix(
+      this.envLayers.nightBreeze,
+      isCloud
+        ? 0.0001
+        : indoors
+          ? isNight
+            ? 0.12
+            : 0.0001
+          : isNight
+            ? 0.74
+            : isSunset
+              ? 0.12
+              : 0.0001,
+    );
+
+    // Subtle rural village daytime atmosphere (warm outdoor stillness; fades down cleanly toward evening)
+    setMix(
+      this.envLayers.villageDayAir,
+      isCloud || indoors || isNight
+        ? 0.0001
+        : isVillageFamily
+          ? isDay
+            ? 0.56
+            : isSunset
+              ? 0.22
+              : 0.0001
+          : 0.0001,
+    );
+
+    // Birds: cheerful morning/daytime songbirds in Day, unhurried evening birds in Sunset, silent at Night
     setMix(
       this.envLayers.birds,
       isNight || isCloud
         ? 0.0001
         : indoors
-          ? 0.16
+          ? 0.18
           : isDay
             ? isVillageStreet
-              ? 0.78
+              ? 0.88
               : 0.85
             : isSunset
-              ? 0.45
+              ? 0.62
               : 0.0001,
     );
+
     setMix(
       this.envLayers.classroom,
-      (dest === 'village-school' || zone === 'classroom') && !isNight ? 0.58 : 0.0001,
+      (dest === 'village-school' || zone === 'classroom') && !isNight ? 0.52 : 0.0001,
     );
     setMix(
       this.envLayers.playground,
@@ -347,23 +405,38 @@ class AmbientSoundscape {
         dest === 'village-school' ||
         zone === 'playground' ||
         zone === 'courtyard') &&
-        !isNight
-        ? 0.45
+        isDay
+        ? 0.36
         : 0.0001,
     );
     setMix(
       this.envLayers.library,
-      dest === 'village-library' || zone === 'library' ? 0.62 : 0.0001,
+      dest === 'village-library' || zone === 'library' ? 0.58 : 0.0001,
     );
     setMix(this.envLayers.amphitheatre, isAbhi ? 0.75 : 0.0001);
     setMix(this.envLayers.community, isSankalp ? 0.75 : 0.0001);
-    setMix(this.envLayers.nightInsects, isCloud ? 0.0001 : isNight ? 0.82 : isSunset ? 0.16 : 0.0001);
 
-    // Strictly ONE primary musical mood bed active per world (soft & peaceful in village)
+    // Night insects & crickets: faint early-evening emergence at Sunset, rich organic chorus at Night
+    setMix(
+      this.envLayers.nightInsects,
+      isCloud
+        ? 0.0001
+        : isNight
+          ? indoors
+            ? 0.28
+            : 0.88
+          : isSunset
+            ? indoors
+              ? 0.06
+              : 0.22
+            : 0.0001,
+    );
+
+    // Musical mood beds: keep Mission Bharari Village (school-adventure) focused purely on natural environmental ambience
     setMix(this.musicLayers.hubPad, isCloud || isHub ? 0.72 : 0.0001);
     setMix(
       this.musicLayers.villageBansuri,
-      isVillageFamily ? (isNight ? 0.36 : isVillageStreet ? 0.42 : 0.62) : 0.0001,
+      isVillageFamily && !isSchool ? (isNight ? 0.32 : 0.52) : 0.0001,
     );
     setMix(this.musicLayers.stageWarmth, isAbhi ? 0.72 : 0.0001);
     setMix(this.musicLayers.communityStrings, isSankalp ? 0.72 : 0.0001);
@@ -377,38 +450,128 @@ class AmbientSoundscape {
     this.timers.push(id);
   }
 
+  private createSeamlessFilteredNoiseBuffer(ctx: AudioContext, seconds = 6): AudioBuffer {
+    const bufferSize = Math.floor(ctx.sampleRate * seconds);
+    const crossfadeSamples = Math.floor(ctx.sampleRate * 0.6);
+    const totalLen = bufferSize + crossfadeSamples;
+    const raw = new Float32Array(totalLen);
+    let lastOut = 0;
+    for (let i = 0; i < totalLen; i++) {
+      const white = Math.random() * 2 - 1;
+      lastOut = (lastOut + 0.024 * white) / 1.024;
+      raw[i] = lastOut * 0.92;
+    }
+
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      if (i < crossfadeSamples) {
+        const t = i / crossfadeSamples;
+        const fadeIn = Math.sin(t * Math.PI * 0.5);
+        const fadeOut = Math.cos(t * Math.PI * 0.5);
+        data[i] = raw[i] * fadeIn + raw[bufferSize + i] * fadeOut;
+      } else {
+        data[i] = raw[i];
+      }
+    }
+    return noiseBuffer;
+  }
+
   private startContinuousBeds(ctx: AudioContext, layers: EnvLayerGains): void {
     if (this.activeSources.length > 0) return;
 
-    // Shared warm filtered noise buffer (3 seconds loopable)
-    const bufferSize = ctx.sampleRate * 3;
-    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = noiseBuffer.getChannelData(0);
-    let lastOut = 0;
-    for (let i = 0; i < bufferSize; i++) {
-      const white = Math.random() * 2 - 1;
-      data[i] = (lastOut + 0.024 * white) / 1.024;
-      lastOut = data[i];
-      data[i] *= 0.85;
-    }
+    // Seamless 6-second crossfaded filtered noise buffer (zero click or loop seam)
+    const noiseBuffer = this.createSeamlessFilteredNoiseBuffer(ctx, 6);
 
-    // 1. Rustling trees & leaves
+    // 1. DAY: Soft breeze rustling gently through village trees (with slow organic gust LFO)
     const leavesNoise = ctx.createBufferSource();
     leavesNoise.buffer = noiseBuffer;
     leavesNoise.loop = true;
     const leavesFilter = ctx.createBiquadFilter();
     leavesFilter.type = 'bandpass';
-    leavesFilter.frequency.value = 430;
-    leavesFilter.Q.value = 1.3;
+    leavesFilter.frequency.value = 470;
+    leavesFilter.Q.value = 1.25;
+    const leavesLfo = ctx.createOscillator();
+    leavesLfo.type = 'sine';
+    leavesLfo.frequency.value = 0.085;
+    const leavesLfoDepth = ctx.createGain();
+    leavesLfoDepth.gain.value = 145;
+    leavesLfo.connect(leavesLfoDepth);
+    leavesLfoDepth.connect(leavesFilter.frequency);
     const leavesGain = ctx.createGain();
-    leavesGain.gain.value = 0.085;
+    leavesGain.gain.value = 0.095;
     leavesNoise.connect(leavesFilter);
     leavesFilter.connect(leavesGain);
     leavesGain.connect(layers.leaves);
     leavesNoise.start();
-    this.activeSources.push(leavesNoise);
+    leavesLfo.start();
+    this.activeSources.push(leavesNoise, leavesLfo);
 
-    // 2. High-altitude soft cloud wind bed (airy whoosh for Cloud Arrival)
+    // 2. DAY: Subtle rural village daytime atmosphere (warm low-mid open-air presence)
+    const dayAirNoise = ctx.createBufferSource();
+    dayAirNoise.buffer = noiseBuffer;
+    dayAirNoise.loop = true;
+    const dayAirFilter = ctx.createBiquadFilter();
+    dayAirFilter.type = 'bandpass';
+    dayAirFilter.frequency.value = 230;
+    dayAirFilter.Q.value = 0.85;
+    const dayAirGain = ctx.createGain();
+    dayAirGain.gain.value = 0.045;
+    dayAirNoise.connect(dayAirFilter);
+    dayAirFilter.connect(dayAirGain);
+    dayAirGain.connect(layers.villageDayAir);
+    dayAirNoise.start(0, 1.3);
+    this.activeSources.push(dayAirNoise);
+
+    // 3. SUNSET: Gentle warm evening wind (unhurried golden-hour breeze swell)
+    const sunsetNoise = ctx.createBufferSource();
+    sunsetNoise.buffer = noiseBuffer;
+    sunsetNoise.loop = true;
+    const sunsetFilter = ctx.createBiquadFilter();
+    sunsetFilter.type = 'bandpass';
+    sunsetFilter.frequency.value = 340;
+    sunsetFilter.Q.value = 1.1;
+    const sunsetLfo = ctx.createOscillator();
+    sunsetLfo.type = 'sine';
+    sunsetLfo.frequency.value = 0.062;
+    const sunsetLfoDepth = ctx.createGain();
+    sunsetLfoDepth.gain.value = 110;
+    sunsetLfo.connect(sunsetLfoDepth);
+    sunsetLfoDepth.connect(sunsetFilter.frequency);
+    const sunsetGain = ctx.createGain();
+    sunsetGain.gain.value = 0.105;
+    sunsetNoise.connect(sunsetFilter);
+    sunsetFilter.connect(sunsetGain);
+    sunsetGain.connect(layers.sunsetWind);
+    sunsetNoise.start(0, 2.4);
+    sunsetLfo.start();
+    this.activeSources.push(sunsetNoise, sunsetLfo);
+
+    // 4. NIGHT: Gentle cool nighttime breeze & hushed rural night stillness
+    const nightNoise = ctx.createBufferSource();
+    nightNoise.buffer = noiseBuffer;
+    nightNoise.loop = true;
+    const nightFilter = ctx.createBiquadFilter();
+    nightFilter.type = 'lowpass';
+    nightFilter.frequency.value = 260;
+    nightFilter.Q.value = 0.75;
+    const nightLfo = ctx.createOscillator();
+    nightLfo.type = 'sine';
+    nightLfo.frequency.value = 0.05;
+    const nightLfoDepth = ctx.createGain();
+    nightLfoDepth.gain.value = 75;
+    nightLfo.connect(nightLfoDepth);
+    nightLfoDepth.connect(nightFilter.frequency);
+    const nightGain = ctx.createGain();
+    nightGain.gain.value = 0.115;
+    nightNoise.connect(nightFilter);
+    nightFilter.connect(nightGain);
+    nightGain.connect(layers.nightBreeze);
+    nightNoise.start(0, 3.8);
+    nightLfo.start();
+    this.activeSources.push(nightNoise, nightLfo);
+
+    // 5. High-altitude soft cloud wind bed (airy whoosh for Cloud Arrival)
     const cloudNoise = ctx.createBufferSource();
     cloudNoise.buffer = noiseBuffer;
     cloudNoise.loop = true;
@@ -421,10 +584,10 @@ class AmbientSoundscape {
     cloudNoise.connect(cloudFilter);
     cloudFilter.connect(cloudGain);
     cloudGain.connect(layers.cloudWind);
-    cloudNoise.start();
+    cloudNoise.start(0, 0.7);
     this.activeSources.push(cloudNoise);
 
-    // 3. Open-air amphitheatre warm hushed room tone
+    // 6. Open-air amphitheatre warm hushed room tone
     const hallNoise = ctx.createBufferSource();
     hallNoise.buffer = noiseBuffer;
     hallNoise.loop = true;
@@ -437,77 +600,310 @@ class AmbientSoundscape {
     hallNoise.connect(hallFilter);
     hallFilter.connect(hallGain);
     hallGain.connect(layers.amphitheatre);
-    hallNoise.start();
+    hallNoise.start(0, 4.5);
     this.activeSources.push(hallNoise);
-
-    // 4. Gentle night cricket chorus
-    const cricketOsc = ctx.createOscillator();
-    cricketOsc.type = 'sine';
-    cricketOsc.frequency.value = 4160;
-    const cricketLfo = ctx.createOscillator();
-    cricketLfo.type = 'sine';
-    cricketLfo.frequency.value = 13.2;
-    const cricketLfoGain = ctx.createGain();
-    cricketLfoGain.gain.value = 0.014;
-    const cricketAmp = ctx.createGain();
-    cricketAmp.gain.value = 0.017;
-    cricketLfo.connect(cricketLfoGain);
-    cricketLfoGain.connect(cricketAmp.gain);
-    cricketOsc.connect(cricketAmp);
-    cricketAmp.connect(layers.nightInsects);
-    cricketOsc.start();
-    cricketLfo.start();
-    this.activeSources.push(cricketOsc, cricketLfo);
   }
 
   private scheduleBirdLoop(): void {
     if (!this.isRunning) return;
-    const delayMs = 2200 + Math.random() * 3400;
+    // Quieter, more spaced-out evening birds during Sunset; lively natural intervals during Day
+    const isSunset = this.currentTimeOfDay === 'sunset';
+    const delayMs = isSunset
+      ? 2900 + Math.random() * 4400
+      : 1900 + Math.random() * 3200;
+
     this.registerTimer(() => {
-      if (this.currentTimeOfDay !== 'night' && this.currentScreen !== 'cloud-arrival') {
-        this.playAmbientSongbird();
+      if (this.currentScreen !== 'cloud-arrival') {
+        if (this.currentTimeOfDay === 'day') {
+          this.playDaytimeRuralBird();
+        } else if (this.currentTimeOfDay === 'sunset') {
+          this.playEveningRuralBird();
+        }
       }
       this.scheduleBirdLoop();
     }, delayMs);
   }
 
-  private playAmbientSongbird(): void {
+  private createSpatialDest(parent: AudioNode, spread = 0.78): AudioNode {
+    if (!this.ctx || typeof this.ctx.createStereoPanner !== 'function') return parent;
+    const panner = this.ctx.createStereoPanner();
+    panner.pan.value = (Math.random() * 2 - 1) * spread;
+    panner.connect(parent);
+    return panner;
+  }
+
+  /**
+   * Varied, gentle rural Maharashtra daytime birdsong (bulbul, sunbird, soft distant koel, sparrow).
+   * Randomized pitch, contour, stereo position & distance to avoid any repetitive loop feel.
+   */
+  private playDaytimeRuralBird(): void {
     if (!this.ctx || !this.envLayers) return;
     const ctx = this.ctx;
     const now = ctx.currentTime;
-    const baseFreq = 1780 + Math.random() * 920;
-    const syllables = 2 + Math.floor(Math.random() * 2);
+    const birdDest = this.createSpatialDest(this.envLayers.birds, 0.78);
+    const distanceScale = 0.48 + Math.random() * 0.52;
+    const speciesRoll = Math.random();
 
-    // Gentle spatial placement across left/right trees & distance attenuation
-    const distanceScale = 0.55 + Math.random() * 0.45;
-    let birdDest: AudioNode = this.envLayers.birds;
-    if (typeof ctx.createStereoPanner === 'function') {
-      const panner = ctx.createStereoPanner();
-      panner.pan.value = (Math.random() * 2 - 1) * 0.72;
-      panner.connect(this.envLayers.birds);
-      birdDest = panner;
+    if (speciesRoll < 0.22) {
+      // Soft distant Indian koel / cuckoo two-note upward call
+      const f0 = 960 + Math.random() * 140;
+      for (let i = 0; i < 2; i++) {
+        const start = now + i * 0.34;
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        const noteBase = f0 * (1 + i * 0.14);
+        osc.frequency.setValueAtTime(noteBase * 0.96, start);
+        osc.frequency.exponentialRampToValueAtTime(noteBase * 1.12, start + 0.18);
+        const env = ctx.createGain();
+        env.gain.setValueAtTime(0.0001, start);
+        env.gain.linearRampToValueAtTime(0.022 * distanceScale, start + 0.04);
+        env.gain.exponentialRampToValueAtTime(0.0001, start + 0.24);
+        osc.connect(env);
+        env.connect(birdDest);
+        osc.start(start);
+        osc.stop(start + 0.26);
+      }
+      return;
     }
 
-    for (let i = 0; i < syllables; i++) {
-      const start = now + i * 0.15;
+    if (speciesRoll < 0.58) {
+      // Cheerful bulbul-style melodic 2–3 syllable phrase
+      const baseFreq = 1850 + Math.random() * 680;
+      const syllables = 2 + Math.floor(Math.random() * 2);
+      for (let i = 0; i < syllables; i++) {
+        const start = now + i * (0.14 + Math.random() * 0.04);
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq * (0.94 + i * 0.08), start);
+        osc.frequency.exponentialRampToValueAtTime(
+          baseFreq * (1.2 + Math.random() * 0.14),
+          start + 0.068,
+        );
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.96, start + 0.125);
+
+        const env = ctx.createGain();
+        env.gain.setValueAtTime(0.0001, start);
+        env.gain.linearRampToValueAtTime(0.026 * distanceScale, start + 0.02);
+        env.gain.exponentialRampToValueAtTime(0.0001, start + 0.13);
+
+        osc.connect(env);
+        env.connect(birdDest);
+        osc.start(start);
+        osc.stop(start + 0.14);
+      }
+      return;
+    }
+
+    // Light sparrow / sunbird soft twitter
+    const baseFreq = 2450 + Math.random() * 750;
+    const chirps = 2 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < chirps; i++) {
+      const start = now + i * (0.095 + Math.random() * 0.03);
       const osc = ctx.createOscillator();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(baseFreq, start);
-      osc.frequency.exponentialRampToValueAtTime(
-        baseFreq * (1.18 + Math.random() * 0.16),
-        start + 0.072,
-      );
-      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.94, start + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.16, start + 0.045);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.9, start + 0.085);
 
       const env = ctx.createGain();
       env.gain.setValueAtTime(0.0001, start);
-      env.gain.linearRampToValueAtTime(0.026 * distanceScale, start + 0.022);
-      env.gain.exponentialRampToValueAtTime(0.0001, start + 0.125);
+      env.gain.linearRampToValueAtTime(0.02 * distanceScale, start + 0.014);
+      env.gain.exponentialRampToValueAtTime(0.0001, start + 0.09);
 
       osc.connect(env);
       env.connect(birdDest);
       osc.start(start);
-      osc.stop(start + 0.135);
+      osc.stop(start + 0.098);
+    }
+  }
+
+  /**
+   * Calmer, warmer evening birds returning to roost during Sunset (soft dove coos & low dusk calls).
+   */
+  private playEveningRuralBird(): void {
+    if (!this.ctx || !this.envLayers) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+    const birdDest = this.createSpatialDest(this.envLayers.birds, 0.82);
+    const distanceScale = 0.45 + Math.random() * 0.45;
+
+    if (Math.random() < 0.48) {
+      // Soft rural spotted-dove evening coo (gentle descending resonant warmth)
+      const f0 = 610 + Math.random() * 90;
+      const notes = [
+        { offset: 0, dur: 0.24, mult: 1.0 },
+        { offset: 0.28, dur: 0.34, mult: 0.91 },
+      ];
+      for (const n of notes) {
+        const start = now + n.offset;
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f0 * n.mult * 1.04, start);
+        osc.frequency.exponentialRampToValueAtTime(f0 * n.mult * 0.92, start + n.dur);
+        const env = ctx.createGain();
+        env.gain.setValueAtTime(0.0001, start);
+        env.gain.linearRampToValueAtTime(0.024 * distanceScale, start + 0.06);
+        env.gain.exponentialRampToValueAtTime(0.0001, start + n.dur);
+        osc.connect(env);
+        env.connect(birdDest);
+        osc.start(start);
+        osc.stop(start + n.dur + 0.03);
+      }
+      return;
+    }
+
+    // Mellow golden-hour homing bird call (warmer pitch, slower cadence than midday)
+    const baseFreq = 1420 + Math.random() * 440;
+    const syllables = 2;
+    for (let i = 0; i < syllables; i++) {
+      const start = now + i * 0.21;
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(baseFreq * (1.06 - i * 0.09), start);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * (0.92 - i * 0.05), start + 0.16);
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0.0001, start);
+      env.gain.linearRampToValueAtTime(0.022 * distanceScale, start + 0.035);
+      env.gain.exponentialRampToValueAtTime(0.0001, start + 0.175);
+      osc.connect(env);
+      env.connect(birdDest);
+      osc.start(start);
+      osc.stop(start + 0.19);
+    }
+  }
+
+  /**
+   * Organic, non-repetitive night cricket & nocturnal insect chorus scheduler.
+   * Active softly at Sunset (dusk transition) and richly at Night.
+   */
+  private scheduleNightInsectLoop(): void {
+    if (!this.isRunning) return;
+    const isNight = this.currentTimeOfDay === 'night';
+    const isSunset = this.currentTimeOfDay === 'sunset';
+    const delayMs = isNight
+      ? 620 + Math.random() * 1350
+      : isSunset
+        ? 1900 + Math.random() * 2600
+        : 2600;
+
+    this.registerTimer(() => {
+      if (this.currentScreen !== 'cloud-arrival' && (isNight || isSunset)) {
+        const roll = Math.random();
+        if (roll < 0.72) {
+          this.playOrganicCricketPhrase();
+        } else if (roll < 0.94) {
+          this.playDistantKatydidTrill();
+        } else if (isNight) {
+          this.playDistantRuralNightOwl();
+        }
+      }
+      this.scheduleNightInsectLoop();
+    }, delayMs);
+  }
+
+  /**
+   * Realistic short rural field-cricket chirp burst (3–5 soft high-frequency stridulation pulses)
+   * with subtle harmonic shimmer and natural stereo placement — zero mechanical continuous buzz.
+   */
+  private playOrganicCricketPhrase(): void {
+    if (!this.ctx || !this.envLayers) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+    const dest = this.createSpatialDest(this.envLayers.nightInsects, 0.86);
+
+    const carrierHz = 3850 + Math.random() * 680;
+    const pulses = 3 + Math.floor(Math.random() * 3); // 3 to 5 quick pulses per chirp
+    const pulseStep = 0.044 + Math.random() * 0.014;
+    const distScale = 0.42 + Math.random() * 0.58;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = carrierHz;
+    filter.Q.value = 5.5;
+    filter.connect(dest);
+
+    for (let i = 0; i < pulses; i++) {
+      const start = now + i * pulseStep;
+      const dur = 0.032;
+
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(carrierHz, start);
+      osc.frequency.linearRampToValueAtTime(carrierHz * 0.985, start + dur);
+
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0.0001, start);
+      env.gain.linearRampToValueAtTime(0.022 * distScale, start + 0.007);
+      env.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+
+      osc.connect(env);
+      env.connect(filter);
+      osc.start(start);
+      osc.stop(start + dur + 0.008);
+    }
+  }
+
+  /**
+   * Soft distant katydid / bush-cricket double raspy trill for nocturnal rural depth.
+   */
+  private playDistantKatydidTrill(): void {
+    if (!this.ctx || !this.envLayers) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+    const dest = this.createSpatialDest(this.envLayers.nightInsects, 0.9);
+    const freq = 4850 + Math.random() * 650;
+    const distScale = 0.35 + Math.random() * 0.4;
+
+    for (let i = 0; i < 2; i++) {
+      const start = now + i * 0.14;
+      const osc = ctx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, start);
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = freq;
+      bp.Q.value = 6.5;
+
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0.0001, start);
+      env.gain.linearRampToValueAtTime(0.011 * distScale, start + 0.025);
+      env.gain.exponentialRampToValueAtTime(0.0001, start + 0.095);
+
+      osc.connect(bp);
+      bp.connect(env);
+      env.connect(dest);
+      osc.start(start);
+      osc.stop(start + 0.105);
+    }
+  }
+
+  /**
+   * Rare, whisper-quiet distant rural night owl note far across the fields.
+   */
+  private playDistantRuralNightOwl(): void {
+    if (!this.ctx || !this.envLayers) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+    const dest = this.createSpatialDest(this.envLayers.nightInsects, 0.85);
+    const base = 390 + Math.random() * 45;
+
+    for (let i = 0; i < 2; i++) {
+      const start = now + i * 0.46;
+      const dur = i === 0 ? 0.28 : 0.42;
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(base * (i === 0 ? 1.04 : 0.96), start);
+      osc.frequency.exponentialRampToValueAtTime(base * (i === 0 ? 0.98 : 0.86), start + dur);
+
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0.0001, start);
+      env.gain.linearRampToValueAtTime(0.012, start + 0.07);
+      env.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+
+      osc.connect(env);
+      env.connect(dest);
+      osc.start(start);
+      osc.stop(start + dur + 0.03);
     }
   }
 

@@ -10,7 +10,10 @@ import {
   Footprints,
   Hand,
   MapPin,
+  Moon,
   Sliders,
+  Sun,
+  Sunset,
   Type,
   Video,
   Volume2,
@@ -22,10 +25,13 @@ import type {
   CameraViewMode,
   MobileInputState,
   SchoolProgressSnapshot,
+  TimeOfDayMode,
 } from '../../types/universe';
 
 interface SchoolAdventureOverlayProps {
   snapshot: SchoolProgressSnapshot;
+  timeOfDay: TimeOfDayMode;
+  onChangeTimeOfDay: (mode: TimeOfDayMode) => void;
   soundMuted: boolean;
   onToggleMute: () => void;
   onOpenSettings: () => void;
@@ -40,6 +46,36 @@ interface SchoolAdventureOverlayProps {
   onMobileLookDelta: (dx: number, dy: number) => void;
   onMobilePinchZoom: (deltaAmount: number) => void;
 }
+
+const TIME_OF_DAY_PRESETS: Array<{
+  id: TimeOfDayMode;
+  label: string;
+  title: string;
+  Icon: typeof Sun;
+  activeClass: string;
+}> = [
+  {
+    id: 'day',
+    label: 'Day',
+    title: 'Natural bright daylight',
+    Icon: Sun,
+    activeClass: 'bg-[#f5b738] text-[#1f1b16] shadow-sm',
+  },
+  {
+    id: 'sunset',
+    label: 'Sunset',
+    title: 'Warm golden-hour sunset',
+    Icon: Sunset,
+    activeClass: 'bg-[#d85a2a] text-white shadow-sm',
+  },
+  {
+    id: 'night',
+    label: 'Night',
+    title: 'Calm moonlit village night',
+    Icon: Moon,
+    activeClass: 'bg-[#1c3563] text-[#f9e8b8] shadow-sm',
+  },
+];
 
 const CAMERA_MODE_LABELS: Record<CameraViewMode, { label: string; shortLabel: string }> = {
   'close-third': { label: '3rd-Person', shortLabel: '3rd' },
@@ -65,6 +101,8 @@ const JOYSTICK_RESPONSE_POWER = 1.55;
  */
 export function SchoolAdventureOverlay({
   snapshot,
+  timeOfDay,
+  onChangeTimeOfDay,
   soundMuted,
   onToggleMute,
   onOpenSettings,
@@ -394,26 +432,58 @@ export function SchoolAdventureOverlay({
         </div>
       </div>
 
-      {/* MINIMAL TOP BAR: Compact Place Name + Essential Controls Only */}
+      {/* MINIMAL TOP BAR: Compact Place Name + Time-of-Day Switcher + Essential Controls */}
       {!isArriving ? (
-        <div className="relative z-10 flex items-center justify-between gap-2 md:px-3">
+        <div className="relative z-10 flex items-center justify-between gap-1.5 sm:gap-2 md:px-3">
           {/* Quiet top-left place name (zero scoreboards or clutter) */}
-          <div className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-[#e6d5be]/80 bg-[#fffaf0]/88 px-3.5 py-2 shadow-sm backdrop-blur-sm">
+          <div className="pointer-events-auto inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#e6d5be]/85 bg-[#fffaf0]/92 px-2.5 py-2 shadow-sm sm:gap-2 sm:px-3.5">
             <MapPin className="h-3.5 w-3.5 shrink-0 text-[#b84c27]" aria-hidden="true" />
-            <span className="text-xs font-extrabold tracking-wide text-[#1f1b16]">
+            <span className="max-w-[86px] truncate whitespace-nowrap text-xs font-extrabold tracking-wide text-[#1f1b16] sm:max-w-[160px] md:max-w-none">
               {snapshot.zoneLabel}
             </span>
           </div>
 
-          {/* Clean top-right action cluster matching Central Hub */}
-          <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2">
+          {/* Clean top-right action cluster: Time-of-Day Switcher + Sound On/Off + Navigation */}
+          <div className="pointer-events-auto flex shrink-0 items-center gap-1 sm:gap-2">
+            {/* Smooth Time-of-Day Preset Selector (Day / Sunset / Night) */}
+            <div
+              role="group"
+              aria-label="Village time of day"
+              onPointerDown={(e) => e.stopPropagation()}
+              className="flex items-center gap-0.5 rounded-full border border-[#e6d5be]/90 bg-[#fffaf0]/92 p-0.5 shadow-sm sm:p-1"
+            >
+              {TIME_OF_DAY_PRESETS.map(({ id, label, title, Icon, activeClass }) => {
+                const active = timeOfDay === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => onChangeTimeOfDay(id)}
+                    title={title}
+                    aria-label={title}
+                    aria-pressed={active}
+                    className={`inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-xs font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5b738] sm:px-2.5 md:px-3 ${
+                      active
+                        ? activeClass
+                        : 'text-[#58423a] hover:bg-[#f5ebda] hover:text-[#1f1b16]'
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span className="hidden md:inline">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <button
               type="button"
               onClick={onReturnToHub}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#e6d5be]/85 bg-[#fffaf0]/90 px-3 py-2 text-xs font-bold text-[#1f1b16] shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+              title="Return to Central Hub"
+              aria-label="Return to Central Hub"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[#e6d5be]/90 bg-[#fffaf0]/92 text-xs font-bold text-[#1f1b16] shadow-sm transition-colors hover:bg-white sm:h-10 sm:w-auto sm:px-3"
             >
               <Compass className="h-3.5 w-3.5 text-[#c75127]" aria-hidden="true" />
-              <span className="hidden sm:inline">Central Hub</span>
+              <span className="hidden xl:inline">Central Hub</span>
             </button>
 
             {!openBook && (
@@ -421,7 +491,7 @@ export function SchoolAdventureOverlay({
                 type="button"
                 onClick={onCycleCameraMode}
                 title="Switch camera view (V)"
-                className="hidden items-center gap-1.5 rounded-full border border-[#e6d5be]/85 bg-[#fffaf0]/90 px-3 py-2 text-xs font-bold text-[#1f1b16] shadow-sm backdrop-blur-sm transition-colors hover:bg-white lg:inline-flex"
+                className="hidden h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-[#e6d5be]/90 bg-[#fffaf0]/92 px-3 text-xs font-bold text-[#1f1b16] shadow-sm transition-colors hover:bg-white lg:inline-flex"
               >
                 {snapshot.cameraMode === 'first-person' ? (
                   <Eye className="h-3.5 w-3.5 text-[#185d7c]" aria-hidden="true" />
@@ -438,21 +508,28 @@ export function SchoolAdventureOverlay({
             <button
               type="button"
               onClick={onToggleMute}
-              aria-label={soundMuted ? 'Unmute audio' : 'Mute audio'}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e6d5be]/85 bg-[#fffaf0]/90 text-[#1f1b16] shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+              title={soundMuted ? 'Turn ambience sound on' : 'Turn ambience sound off'}
+              aria-label={soundMuted ? 'Turn sound on' : 'Turn sound off'}
+              aria-pressed={!soundMuted}
+              className={`inline-flex h-9 w-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border text-xs font-bold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5b738] sm:h-10 sm:w-auto sm:px-3 ${
+                soundMuted
+                  ? 'border-[#e6d5be]/90 bg-[#fffaf0]/92 text-[#7a5d4b] hover:bg-white'
+                  : 'border-[#cfe1da] bg-[#fffaf0]/95 text-[#1b6457] hover:bg-white'
+              }`}
             >
               {soundMuted ? (
-                <VolumeX className="h-4 w-4 text-[#8c6b58]" aria-hidden="true" />
+                <VolumeX className="h-4 w-4 shrink-0 text-[#8c6b58]" aria-hidden="true" />
               ) : (
-                <Volume2 className="h-4 w-4 text-[#1d7465]" aria-hidden="true" />
+                <Volume2 className="h-4 w-4 shrink-0 text-[#1d7465]" aria-hidden="true" />
               )}
+              <span className="hidden sm:inline">{soundMuted ? 'Sound Off' : 'Sound On'}</span>
             </button>
 
             <button
               type="button"
               onClick={onOpenSettings}
               aria-label="Open settings"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e6d5be]/85 bg-[#fffaf0]/90 text-[#1f1b16] shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#e6d5be]/90 bg-[#fffaf0]/92 text-[#1f1b16] shadow-sm transition-colors hover:bg-white sm:h-10 sm:w-10"
             >
               <Sliders className="h-4 w-4 text-[#4b382d]" aria-hidden="true" />
             </button>

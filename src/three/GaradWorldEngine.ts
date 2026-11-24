@@ -150,6 +150,7 @@ export class GaradWorldEngine {
 
   private readonly textures: ProceduralTextureSet;
   private readonly wind: WindSystem;
+  private readonly sunKey: THREE.DirectionalLight;
   private readonly timeOfDay: TimeOfDaySystem;
   private readonly environment: VillageEnvironmentResult;
   private readonly destinations: DestinationsBuildResult;
@@ -311,22 +312,24 @@ export class GaradWorldEngine {
     hemiLight.position.set(0, 65, 0);
     this.scene.add(hemiLight);
 
-    const sunKey = new THREE.DirectionalLight('#FFF0D6', 1.72);
-    sunKey.position.set(38, 44, 28);
+    const sunKey = new THREE.DirectionalLight('#FFF3DB', 1.82);
+    sunKey.position.set(40, 46, 30);
     sunKey.castShadow = true;
     sunKey.shadow.mapSize.width = 2048;
     sunKey.shadow.mapSize.height = 2048;
     sunKey.shadow.camera.near = 6;
-    sunKey.shadow.camera.far = 135;
-    const d = 46;
+    sunKey.shadow.camera.far = 165;
+    const d = 54;
     sunKey.shadow.camera.left = -d;
     sunKey.shadow.camera.right = d;
     sunKey.shadow.camera.top = d;
     sunKey.shadow.camera.bottom = -d;
     sunKey.shadow.bias = -0.00042;
-    sunKey.shadow.normalBias = 0.026;
-    sunKey.shadow.radius = 3.2;
+    sunKey.shadow.normalBias = 0.028;
+    sunKey.shadow.radius = 3.4;
     this.scene.add(sunKey);
+    this.scene.add(sunKey.target);
+    this.sunKey = sunKey;
 
     const rimLight = new THREE.DirectionalLight('#B2D0E6', 0.24);
     rimLight.position.set(-34, 24, -30);
@@ -561,6 +564,10 @@ export class GaradWorldEngine {
     if (!isSchool) {
       this.livingBook3D.group.visible = false;
     }
+
+    // Center shadow frustum over Mission Bharari Village (Z = -10..+55) when inside school-adventure
+    this.sunKey.target.position.set(0, 0, isSchool ? 18 : 0);
+    this.sunKey.target.updateMatrixWorld();
 
     this.centralHub.group.visible = isHubOrClouds;
     this.cloudArrival.group.visible = screen === 'cloud-arrival';

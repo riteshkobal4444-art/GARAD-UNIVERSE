@@ -64,6 +64,8 @@ interface LightingPreset {
   fogDensity: number;
   exposure: number;
   cloudColor: THREE.Color;
+  cloudShadowColor: THREE.Color;
+  cloudOpacity: number;
   cloudEmissive: THREE.Color;
   cloudEmissiveIntensity: number;
   waterColor: THREE.Color;
@@ -73,101 +75,107 @@ interface LightingPreset {
 }
 
 const PRESETS: Record<TimeOfDayMode, LightingPreset> = {
-  // DEFAULT: Natural, cinematic, soft rural Maharashtra daylight with balanced contrast & rich natural tones
+  // DAY: Natural bright daylight, fresh blue sky with subtle clouds, vibrant greenery & realistic soft shadows
   day: {
-    skyZenith: new THREE.Color('#2A6AA6'),
-    skyMid: new THREE.Color('#5C96C4'),
-    skyHorizon: new THREE.Color('#C0D6E4'),
-    skyGround: new THREE.Color('#6C7F58'),
+    skyZenith: new THREE.Color('#266DB4'),
+    skyMid: new THREE.Color('#62A4D8'),
+    skyHorizon: new THREE.Color('#CCE2F0'),
+    skyGround: new THREE.Color('#6F8757'),
     sunDir: new THREE.Vector3(0.48, 0.72, 0.5).normalize(),
-    sunColor: new THREE.Color('#F7F1E1'),
-    sunHaloColor: new THREE.Color('#F0E2BE'),
-    sunIntensity: 0.68,
-    sunKeyPos: new THREE.Vector3(38, 44, 28),
-    sunKeyColor: new THREE.Color('#FFF0D6'),
-    sunKeyIntensity: 1.72,
-    hemiSky: new THREE.Color('#88B6D8'),
-    hemiGround: new THREE.Color('#586744'),
-    hemiIntensity: 0.56,
-    rimColor: new THREE.Color('#B2D0E6'),
-    rimIntensity: 0.24,
+    sunColor: new THREE.Color('#FFF8E8'),
+    sunHaloColor: new THREE.Color('#F7E8C6'),
+    sunIntensity: 0.72,
+    sunKeyPos: new THREE.Vector3(40, 46, 30),
+    sunKeyColor: new THREE.Color('#FFF3DB'),
+    sunKeyIntensity: 1.82,
+    hemiSky: new THREE.Color('#92C2E4'),
+    hemiGround: new THREE.Color('#5C7245'),
+    hemiIntensity: 0.62,
+    rimColor: new THREE.Color('#B8D8EE'),
+    rimIntensity: 0.26,
     rimPos: new THREE.Vector3(-34, 24, -30),
-    fillColor: new THREE.Color('#A8C6DC'),
-    fillIntensity: 0.18,
-    fogColor: new THREE.Color('#C2D7E4'),
-    fogDensity: 0.0046,
-    exposure: 0.92,
-    cloudColor: new THREE.Color('#E8E5DE'),
-    cloudEmissive: new THREE.Color('#D5DCE4'),
-    cloudEmissiveIntensity: 0.03,
+    fillColor: new THREE.Color('#AED0E6'),
+    fillIntensity: 0.2,
+    fogColor: new THREE.Color('#C8DFEE'),
+    fogDensity: 0.0042,
+    exposure: 0.96,
+    cloudColor: new THREE.Color('#FAF8F3'),
+    cloudShadowColor: new THREE.Color('#B8CFE2'),
+    cloudOpacity: 0.56,
+    cloudEmissive: new THREE.Color('#DDE6EE'),
+    cloudEmissiveIntensity: 0.04,
     waterColor: new THREE.Color('#3489A6'),
     waterEmissive: new THREE.Color('#14475B'),
     waterEmissiveIntensity: 0.08,
-    envIntensity: 0.38,
+    envIntensity: 0.4,
   },
-  // SUNSET: Soft cinematic Sahyadri late afternoon with warm directional sunlight & natural shadows
+  // SUNSET: Warm golden-hour sunlight, orange/amber/soft pink sky tones & long soft shadows without overly dark shading
   sunset: {
-    skyZenith: new THREE.Color('#28436E'),
-    skyMid: new THREE.Color('#9F6366'),
-    skyHorizon: new THREE.Color('#E09559'),
-    skyGround: new THREE.Color('#6A4936'),
-    sunDir: new THREE.Vector3(-0.76, 0.24, 0.59).normalize(),
-    sunColor: new THREE.Color('#F7D7A0'),
-    sunHaloColor: new THREE.Color('#E88B44'),
-    sunIntensity: 0.85,
-    sunKeyPos: new THREE.Vector3(-48, 17, 34),
-    sunKeyColor: new THREE.Color('#F5A860'),
-    sunKeyIntensity: 1.72,
-    hemiSky: new THREE.Color('#DC9468'),
-    hemiGround: new THREE.Color('#5D4432'),
-    hemiIntensity: 0.5,
-    rimColor: new THREE.Color('#E88A4C'),
-    rimIntensity: 0.44,
+    skyZenith: new THREE.Color('#2D4373'),
+    skyMid: new THREE.Color('#C67982'),
+    skyHorizon: new THREE.Color('#EE9B54'),
+    skyGround: new THREE.Color('#704E3A'),
+    sunDir: new THREE.Vector3(-0.82, 0.19, 0.54).normalize(),
+    sunColor: new THREE.Color('#FFE0AA'),
+    sunHaloColor: new THREE.Color('#F4924A'),
+    sunIntensity: 0.92,
+    sunKeyPos: new THREE.Vector3(-58, 15.5, 34),
+    sunKeyColor: new THREE.Color('#FFB568'),
+    sunKeyIntensity: 1.88,
+    hemiSky: new THREE.Color('#EA9E78'),
+    hemiGround: new THREE.Color('#694C38'),
+    hemiIntensity: 0.56,
+    rimColor: new THREE.Color('#F29558'),
+    rimIntensity: 0.46,
     rimPos: new THREE.Vector3(38, 16, -28),
-    fillColor: new THREE.Color('#747AA4'),
-    fillIntensity: 0.2,
-    fogColor: new THREE.Color('#D09164'),
-    fogDensity: 0.0074,
-    exposure: 0.94,
-    cloudColor: new THREE.Color('#E4BC98'),
-    cloudEmissive: new THREE.Color('#C97A44'),
-    cloudEmissiveIntensity: 0.11,
+    fillColor: new THREE.Color('#8E82AA'),
+    fillIntensity: 0.24,
+    fogColor: new THREE.Color('#DC9B6E'),
+    fogDensity: 0.0064,
+    exposure: 0.98,
+    cloudColor: new THREE.Color('#FFCEA4'),
+    cloudShadowColor: new THREE.Color('#AE6976'),
+    cloudOpacity: 0.62,
+    cloudEmissive: new THREE.Color('#D4804E'),
+    cloudEmissiveIntensity: 0.14,
     waterColor: new THREE.Color('#696778'),
     waterEmissive: new THREE.Color('#824926'),
     waterEmissiveIntensity: 0.14,
-    envIntensity: 0.32,
+    envIntensity: 0.35,
   },
-  // NIGHT: Deep calm village night sky, crisp moonlight, subtle starlight & cozy warm lanterns
+  // NIGHT: Deep blue night sky, subtle moonlight with realistic nighttime shadows & comfortable village visibility
   night: {
-    skyZenith: new THREE.Color('#070F22'),
-    skyMid: new THREE.Color('#102042'),
-    skyHorizon: new THREE.Color('#1D325A'),
-    skyGround: new THREE.Color('#0B1424'),
-    sunDir: new THREE.Vector3(-0.38, 0.68, -0.62).normalize(),
-    sunColor: new THREE.Color('#DCE9F8'),
-    sunHaloColor: new THREE.Color('#628EC8'),
-    sunIntensity: 0.6,
-    sunKeyPos: new THREE.Vector3(-24, 42, -36),
-    sunKeyColor: new THREE.Color('#86AFE8'),
-    sunKeyIntensity: 0.68,
-    hemiSky: new THREE.Color('#2A487A'),
-    hemiGround: new THREE.Color('#172034'),
-    hemiIntensity: 0.42,
-    rimColor: new THREE.Color('#7098D2'),
-    rimIntensity: 0.28,
+    skyZenith: new THREE.Color('#060F24'),
+    skyMid: new THREE.Color('#10234A'),
+    skyHorizon: new THREE.Color('#1E3868'),
+    skyGround: new THREE.Color('#0D182C'),
+    sunDir: new THREE.Vector3(-0.38, 0.66, -0.64).normalize(),
+    sunColor: new THREE.Color('#E2EEFC'),
+    sunHaloColor: new THREE.Color('#6C98D4'),
+    sunIntensity: 0.64,
+    sunKeyPos: new THREE.Vector3(-26, 42, -38),
+    sunKeyColor: new THREE.Color('#9BC0F2'),
+    sunKeyIntensity: 0.78,
+    hemiSky: new THREE.Color('#34588F'),
+    hemiGround: new THREE.Color('#1D2940'),
+    hemiIntensity: 0.52,
+    rimColor: new THREE.Color('#7BA4DC'),
+    rimIntensity: 0.32,
     rimPos: new THREE.Vector3(28, 22, 26),
-    fillColor: new THREE.Color('#2E4C80'),
-    fillIntensity: 0.18,
-    fogColor: new THREE.Color('#152544'),
-    fogDensity: 0.0085,
-    exposure: 0.92,
-    cloudColor: new THREE.Color('#384C74'),
-    cloudEmissive: new THREE.Color('#172644'),
+    fillColor: new THREE.Color('#385B94'),
+    fillIntensity: 0.24,
+    fogColor: new THREE.Color('#172B4E'),
+    fogDensity: 0.0074,
+    exposure: 0.96,
+    cloudColor: new THREE.Color('#4B6896'),
+    cloudShadowColor: new THREE.Color('#132240'),
+    cloudOpacity: 0.24,
+    cloudEmissive: new THREE.Color('#1B2E52'),
     cloudEmissiveIntensity: 0.08,
     waterColor: new THREE.Color('#19395E'),
     waterEmissive: new THREE.Color('#21416B'),
     waterEmissiveIntensity: 0.18,
-    envIntensity: 0.22,
+    envIntensity: 0.26,
   },
 };
 
@@ -232,7 +240,7 @@ export function createTimeOfDaySystem(
   const geometries: THREE.BufferGeometry[] = [];
   const materials: THREE.Material[] = [];
 
-  // 1. Procedural Smooth-Blending Atmospheric Sky Dome (single geometry for Day / Sunset / Night)
+  // 1. Procedural Smooth-Blending Atmospheric Sky Dome with Subtle Drifting Clouds
   const skyUniforms = {
     uZenithColor: { value: PRESETS.day.skyZenith.clone() },
     uMidColor: { value: PRESETS.day.skyMid.clone() },
@@ -243,6 +251,10 @@ export function createTimeOfDaySystem(
     uSunHaloColor: { value: PRESETS.day.sunHaloColor.clone() },
     uSunIntensity: { value: PRESETS.day.sunIntensity },
     uNightFactor: { value: 0.0 },
+    uTime: { value: 0.0 },
+    uCloudColor: { value: PRESETS.day.cloudColor.clone() },
+    uCloudShadowColor: { value: PRESETS.day.cloudShadowColor.clone() },
+    uCloudOpacity: { value: PRESETS.day.cloudOpacity },
   };
 
   const skyGeo = new THREE.SphereGeometry(156, 36, 22);
@@ -271,8 +283,41 @@ export function createTimeOfDaySystem(
       uniform vec3 uSunHaloColor;
       uniform float uSunIntensity;
       uniform float uNightFactor;
+      uniform float uTime;
+      uniform vec3 uCloudColor;
+      uniform vec3 uCloudShadowColor;
+      uniform float uCloudOpacity;
 
       varying vec3 vWorldDir;
+
+      float hash21(vec2 p) {
+        p = fract(p * vec2(123.34, 456.21));
+        p += dot(p, p + 45.32);
+        return fract(p.x * p.y);
+      }
+
+      float valueNoise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        float a = hash21(i);
+        float b = hash21(i + vec2(1.0, 0.0));
+        float c = hash21(i + vec2(0.0, 1.0));
+        float d = hash21(i + vec2(1.0, 1.0));
+        return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+      }
+
+      float cloudFbm(vec2 p) {
+        float v = 0.0;
+        float a = 0.5;
+        mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
+        for (int i = 0; i < 4; i++) {
+          v += a * valueNoise(p);
+          p = rot * p * 2.04 + vec2(1.7, 9.2);
+          a *= 0.5;
+        }
+        return v;
+      }
 
       void main() {
         vec3 dir = normalize(vWorldDir);
@@ -291,7 +336,7 @@ export function createTimeOfDaySystem(
 
         // Controlled natural solar/lunar disc & gentle atmospheric scattering
         float sunDot = max(dot(dir, normalize(uSunDir)), 0.0);
-        float halo = pow(sunDot, mix(9.0, 16.0, uNightFactor)) * 0.22 * uSunIntensity;
+        float halo = pow(sunDot, mix(8.5, 16.0, uNightFactor)) * 0.24 * uSunIntensity;
         float coreSize = mix(0.9970, 0.9980, uNightFactor);
         float disc = smoothstep(coreSize, 0.9994, sunDot);
 
@@ -299,8 +344,29 @@ export function createTimeOfDaySystem(
         skyCol = mix(skyCol, uSunColor * 1.02, disc * 0.88);
 
         // Subtle atmospheric horizon warmth without washing out sky blue
-        float horizonGlow = pow(1.0 - abs(h), 10.0) * 0.055 * (1.0 - uNightFactor * 0.65);
+        float horizonGlow = pow(1.0 - abs(h), 10.0) * 0.065 * (1.0 - uNightFactor * 0.65);
         skyCol += uSunHaloColor * horizonGlow;
+
+        // Soft, natural drifting sky clouds across the upper hemisphere
+        if (h > 0.02) {
+          vec2 cloudUv = dir.xz / (h + 0.34);
+          vec2 drift = vec2(uTime * 0.011, uTime * 0.004);
+          float n1 = cloudFbm(cloudUv * 1.15 + drift);
+          float n2 = cloudFbm(cloudUv * 2.35 - drift * 0.45 + vec2(4.2, 1.8));
+          float density = smoothstep(0.50, 0.80, n1 * 0.72 + n2 * 0.28);
+
+          // Fade gracefully near horizon & zenith for realistic atmospheric perspective
+          float horizonFade = smoothstep(0.02, 0.20, h);
+          float zenithFade = 1.0 - smoothstep(0.75, 0.98, h) * 0.25;
+          float cloudMask = density * horizonFade * zenithFade * uCloudOpacity;
+
+          // Warm solar rim-lighting on cloud crests, cooler underside shading
+          float sunLit = pow(sunDot, 3.0) * 0.35 * (1.0 - uNightFactor * 0.75);
+          vec3 cloudCol = mix(uCloudShadowColor, uCloudColor, clamp(0.45 + n2 * 0.55 + sunLit, 0.0, 1.0));
+          cloudCol += uSunHaloColor * sunLit * 0.35;
+
+          skyCol = mix(skyCol, cloudCol, cloudMask);
+        }
 
         gl_FragColor = vec4(skyCol, 1.0);
       }
@@ -429,6 +495,18 @@ export function createTimeOfDaySystem(
     mixThreeColors(skyUniforms.uSunHaloColor.value, pD.sunHaloColor, pS.sunHaloColor, pN.sunHaloColor, wd, ws, wn);
     skyUniforms.uSunIntensity.value = mixThreeNumbers(pD.sunIntensity, pS.sunIntensity, pN.sunIntensity, wd, ws, wn);
     skyUniforms.uNightFactor.value = wn;
+    skyUniforms.uTime.value = elapsed;
+    mixThreeColors(skyUniforms.uCloudColor.value, pD.cloudColor, pS.cloudColor, pN.cloudColor, wd, ws, wn);
+    mixThreeColors(
+      skyUniforms.uCloudShadowColor.value,
+      pD.cloudShadowColor,
+      pS.cloudShadowColor,
+      pN.cloudShadowColor,
+      wd,
+      ws,
+      wn,
+    );
+    skyUniforms.uCloudOpacity.value = mixThreeNumbers(pD.cloudOpacity, pS.cloudOpacity, pN.cloudOpacity, wd, ws, wn);
 
     // Stars visibility (fade in smoothly during dusk/night)
     starUniforms.uTime.value = elapsed;
@@ -436,9 +514,9 @@ export function createTimeOfDaySystem(
     starUniforms.uOpacity.value = starAlpha;
     starPoints.visible = starAlpha > 0.01;
 
-    // Single shadow-casting directional light (Sun -> Low Sunset Sun -> Cool Moon)
+    // Single shadow-casting directional light (Sun -> Low Sunset Sun -> Cool Moon), relative to target
     mixThreeVec3(tmpVec, pD.sunKeyPos, pS.sunKeyPos, pN.sunKeyPos, wd, ws, wn);
-    lights.sunKey.position.copy(tmpVec);
+    lights.sunKey.position.copy(tmpVec).add(lights.sunKey.target.position);
     mixThreeColors(lights.sunKey.color, pD.sunKeyColor, pS.sunKeyColor, pN.sunKeyColor, wd, ws, wn);
     lights.sunKey.intensity = mixThreeNumbers(
       pD.sunKeyIntensity,

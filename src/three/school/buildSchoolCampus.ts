@@ -24,6 +24,7 @@ import {
 } from './schoolDisplays';
 import { buildLearningKitPavilion } from './buildLearningKitPavilion';
 import { buildVillageMainStreet } from './buildVillageMainStreet';
+import { buildVillageNightLighting } from './buildVillageNightLighting';
 
 interface SwingingDoor {
   id: string;
@@ -349,6 +350,10 @@ export function buildSchoolCampus(
     interactions,
   );
   group.add(learningKitPavilion.group);
+
+  // Additive rural Maharashtra veranda lanterns & warm evening/night illumination
+  const villageNightLighting = buildVillageNightLighting(timeOfDay);
+  group.add(villageNightLighting.group);
 
   // Sun-baked ochre school courtyard apron seamlessly joining the North end of Main Street
   const courtyardMesh = new THREE.Mesh(trackGeo(new THREE.PlaneGeometry(19.6, 10.8)), courtyardMat);
@@ -2163,6 +2168,7 @@ export function buildSchoolCampus(
   const dispose = () => {
     mainStreet.dispose();
     learningKitPavilion.dispose();
+    villageNightLighting.dispose();
     wallClock.dispose();
     for (const d of disposables) {
       d.dispose();
